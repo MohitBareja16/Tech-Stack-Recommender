@@ -81,6 +81,14 @@ python main.py --skills "Python" "Machine Learning" "SQL" "Statistics"
 
 # 5. Run the full test suite
 pytest tests/ -v
+
+# 6. Open the visual dashboard in your browser
+# Windows:
+start dashboard/index.html
+# macOS:
+open dashboard/index.html
+# Linux:
+xdg-open dashboard/index.html
 ```
 
 ### Example Output
@@ -375,6 +383,11 @@ python main.py --skills "Python" "Deep Learning" "PyTorch" --verbose
 
 # Custom dataset
 python main.py --skills "Python" "SQL" "Pandas" --dataset /path/to/my_roles.csv
+
+# View the interactive dashboard
+# Windows: start dashboard/index.html
+# macOS:   open dashboard/index.html
+# Linux:   xdg-open dashboard/index.html
 ```
 
 ### Input Validation
