@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech Stack Recommender — DecodeLabs Project 3</title>
+  <meta name="description" content="Interactive visual dashboard for the Tech Stack Recommender: TF-IDF vectorization + Cosine Similarity recommendation engine built from scratch." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════ HERO HEADER ═══════════════ -->
+  <header class="hero" id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-orb hero-orb--1"></div>
+    <div class="hero-orb hero-orb--2"></div>
+    <div class="hero-orb hero-orb--3"></div>
+
+    <nav class="nav">
+      <div class="nav-brand">
+        <span class="nav-logo">◈</span>
+        <span class="nav-title">DecodeLabs <span class="nav-badge">Project 3</span></span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#demo" class="nav-link">Live Demo</a></li>
+        <li><a href="#pipeline" class="nav-link">Pipeline</a></li>
+        <li><a href="#algorithm" class="nav-link">Algorithm</a></li>
+        <li><a href="#testing" class="nav-link">Testing</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-content">
+      <div class="hero-chip">AI Recommendation Logic</div>
+      <h1 class="hero-title">
+        Tech Stack<br />
+        <span class="hero-title-gradient">Recommender</span>
+      </h1>
+      <p class="hero-subtitle">
+        A content-based recommendation engine built from first principles —
+        <strong>TF-IDF vectorization</strong> + <strong>Cosine Similarity</strong>,
+        zero ML libraries.
+      </p>
+      <div class="hero-cta">
+        <a href="#demo" class="btn btn--primary" id="hero-demo-btn">Try the Demo</a>
+        <a href="#pipeline" class="btn btn--ghost">Explore Pipeline</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-roles">10</span>
+          <span class="hero-stat-label">Job Roles</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value" id="stat-vocab">—</span>
+          <span class="hero-stat-label">Vocab Terms</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">4</span>
+          <span class="hero-stat-label">Pipeline Stages</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-value">0</span>
+          <span class="hero-stat-label">ML Libraries</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════ LIVE DEMO SECTION ═══════════════ -->
+  <section class="section demo-section" id="demo">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-chip">Interactive</span>
+        <h2 class="section-title">Live Recommender Demo</h2>
+        <p class="section-sub">Enter your skills and watch the TF-IDF engine find your best-fit roles in real time.</p>
+      </div>
+
+      <div class="demo-grid">
+        <!-- Input Panel -->
+        <div class="demo-panel demo-panel--input">
+          <div class="panel-header">
+            <span class="panel-icon">⌨</span>
+            <h3 class="panel-title">Your Skills</h3>
+            <span class="panel-badge" id="skill-count-badge">0 skills</span>
+          </div>
+
+          <div class="skill-presets">
+            <button class="preset-btn" id="preset-data" data-preset="data">📊 Data Scientist</button>
+            <button class="preset-btn" id="preset-devops" data-preset="devops">⚙️ DevOps</button>
+            <button class="preset-btn" id="preset-frontend" data-preset="frontend">🎨 Frontend</button>
+            <button class="preset-btn" id="preset-security" data-preset="security">🔐 Security</button>
+            <button class="preset-btn" id="preset-cold" data-preset="cold">❄️ Cold Start</button>
+          </div>
+
+          <div class="skill-input-area">
+            <div class="skill-tags" id="skill-tags"></div>
+            <div class="skill-input-row">
+              <input
+                type="text"
+                id="skill-input"
+                class="skill-input"
+                placeholder="Type a skill and press Enter…"
+                autocomplete="off"
+                autocorrect="off"
+                spellcheck="false"
+              />
+              <button class="add-skill-btn" id="add-skill-btn" title="Add skill">+</button>
+            </div>
+            <p class="skill-hint" id="skill-hint">Add at least <strong>3 skills</strong> to unlock recommendations.</p>
+          </div>
+
+          <div class="demo-controls">
+            <div class="top-n-control">
+              <label class="control-label" for="top-n-slider">Top-N results</label>
+              <div class="slider-row">
+                <input type="range" id="top-n-slider" min="1" max="10" value="3" class="slider" />
+                <span class="slider-value" id="top-n-value">3</span>
+              </div>
+            </div>
+            <label class="toggle-row">
+              <input type="checkbox" id="verbose-toggle" class="toggle-input" />
+              <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              <span class="toggle-label">Verbose / Debug mode</span>
+            </label>
+          </div>
+
+          <button class="run-btn" id="run-btn" disabled>
+            <span class="run-btn-icon">▶</span>
+            Run Recommender
+          </button>
+        </div>
+
+        <!-- Results Panel -->
+        <div class="demo-panel demo-panel--results">
+          <div class="panel-header">
+            <span class="panel-icon">🎯</span>
+            <h3 class="panel-title">Recommendations</h3>
+            <span class="panel-badge" id="result-time"></span>
+          </div>
+
+          <div id="results-container" class="results-container results-empty">
+            <div class="empty-state">
+              <div class="empty-icon">◈</div>
+              <p>Add skills and click <strong>Run Recommender</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Debug Panel (verbose mode) -->
+      <div class="debug-panel hidden" id="debug-panel">
+        <div class="debug-header">
+          <span class="debug-title">⬡ TF-IDF Vector Debug View</span>
+          <span class="debug-sub">User vector dimensions (non-zero only)</span>
+        </div>
+        <div class="debug-body" id="debug-body"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PIPELINE SECTION ═══════════════ -->
+  <section class="section pipeline-section" id="pipeline">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-chip">Architecture</span>
+        <h2 class="section-title">4-Stage IPO Pipeline</h2>
+        <p class="section-sub">Every stage is an independent, unit-testable module — no monolithic scripts.</p>
+      </div>
+
+      <div class="pipeline-flow">
+        <div class="pipeline-stage" id="stage-input">
+          <div class="stage-icon-wrap stage-icon-wrap--1">
+            <span class="stage-icon">📥</span>
+          </div>
+          <div class="stage-content">
+            <div class="stage-num">01</div>
+            <h3 class="stage-title">Ingestion</h3>
+            <p class="stage-module"><code>data_loader.py</code></p>
+            <ul class="stage-bullets">
+              <li>Parse <code>raw_skills.csv</code></li>
+              <li>Validate rows &amp; skip malformed</li>
+              <li>Normalize text (lowercase + strip)</li>
+              <li>Produce <code>ItemRecord[]</code></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-stage" id="stage-vectorize">
+          <div class="stage-icon-wrap stage-icon-wrap--2">
+            <span class="stage-icon">⟨v⟩</span>
+          </div>
+          <div class="stage-content">
+            <div class="stage-num">02</div>
+            <h3 class="stage-title">Vectorize</h3>
+            <p class="stage-module"><code>vectorizer.py</code></p>
+            <ul class="stage-bullets">
+              <li>Build shared vocabulary</li>
+              <li>Compute TF per document</li>
+              <li>Compute IDF across corpus</li>
+              <li>Build TF-IDF item matrix</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-stage" id="stage-score">
+          <div class="stage-icon-wrap stage-icon-wrap--3">
+            <span class="stage-icon">cos θ</span>
+          </div>
+          <div class="stage-content">
+            <div class="stage-num">03</div>
+            <h3 class="stage-title">Score</h3>
+            <p class="stage-module"><code>similarity_engine.py</code></p>
+            <ul class="stage-bullets">
+              <li>Cosine Similarity (from scratch)</li>
+              <li>Vectorized matrix multiply</li>
+              <li>Full scan — no pre-filtering</li>
+              <li>Cold Start detection</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="pipeline-arrow">→</div>
+
+        <div class="pipeline-stage" id="stage-output">
+          <div class="stage-icon-wrap stage-icon-wrap--4">
+            <span class="stage-icon">🏆</span>
+          </div>
+          <div class="stage-content">
+            <div class="stage-num">04</div>
+            <h3 class="stage-title">Rank &amp; Output</h3>
+            <p class="stage-module"><code>ranker.py · presenter.py</code></p>
+            <ul class="stage-bullets">
+              <li>Sort by score (desc)</li>
+              <li>Tie-break alphabetically</li>
+              <li>Truncate to Top-N</li>
+              <li>Popularity fallback</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ ALGORITHM SECTION ═══════════════ -->
+  <section class="section algorithm-section" id="algorithm">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-chip">Math</span>
+        <h2 class="section-title">Algorithm Deep-Dive</h2>
+        <p class="section-sub">Built from first principles — every formula coded by hand, no black-box libraries.</p>
+      </div>
+
+      <div class="algo-grid">
+        <!-- TF Card -->
+        <div class="algo-card">
+          <div class="algo-card-top">
+            <span class="algo-num">01</span>
+            <span class="algo-label">Term Frequency</span>
+          </div>
+          <div class="algo-formula">
+            <span class="formula-text">TF(t, d) = count(t in d) / total_terms(d)</span>
+          </div>
+          <p class="algo-desc">
+            How often a skill appears in a document — normalized by total terms.
+            Duplicates <em>intentionally</em> increase TF (stronger signal).
+          </p>
+          <div class="algo-example">
+            <div class="example-row">
+              <span class="example-label">python in [python, sql, ml]</span>
+              <span class="example-value">1/3 = 0.333</span>
+            </div>
+            <div class="example-row">
+              <span class="example-label">python in [python, python, python]</span>
+              <span class="example-value">3/3 = 1.000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- IDF Card -->
+        <div class="algo-card">
+          <div class="algo-card-top">
+            <span class="algo-num">02</span>
+            <span class="algo-label">Inverse Document Frequency</span>
+          </div>
+          <div class="algo-formula">
+            <span class="formula-text">IDF(t) = log( N / df(t) )</span>
+          </div>
+          <p class="algo-desc">
+            Penalizes common terms (appear in many roles) and rewards rare,
+            specific skills. <em>Generic terms matter less.</em>
+          </p>
+          <div class="algo-example">
+            <div class="example-row">
+              <span class="example-label">python (2 of 3 items)</span>
+              <span class="example-value">log(3/2) = 0.405</span>
+            </div>
+            <div class="example-row">
+              <span class="example-label">kubernetes (1 of 3 items)</span>
+              <span class="example-value">log(3/1) = 1.099</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cosine Card -->
+        <div class="algo-card algo-card--wide">
+          <div class="algo-card-top">
+            <span class="algo-num">03</span>
+            <span class="algo-label">Cosine Similarity</span>
+          </div>
+          <div class="algo-formula">
+            <span class="formula-text">cos(θ) = (A · B) / (‖A‖ × ‖B‖)</span>
+          </div>
+          <p class="algo-desc">
+            Measures the <em>angle</em> between two skill vectors — magnitude-invariant.
+            A long resume and a short one with identical proportions score the same.
+            Returns <code>0.0</code> when either vector is zero (Cold Start guard).
+          </p>
+          <div class="cosine-visual" id="cosine-visual">
+            <canvas id="cosine-canvas" width="300" height="180"></canvas>
+            <div class="cosine-labels">
+              <span class="cosine-label cosine-label--user">User vector (A)</span>
+              <span class="cosine-label cosine-label--item">Item vector (B)</span>
+              <span class="cosine-label cosine-label--angle" id="cosine-angle-label">cos θ ≈ 0.94</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cold Start Card -->
+        <div class="algo-card algo-card--cold">
+          <div class="algo-card-top">
+            <span class="algo-num">04</span>
+            <span class="algo-label">Cold Start Handling</span>
+          </div>
+          <div class="cold-start-visual">
+            <div class="cold-path cold-path--normal">
+              <div class="cold-icon">🧭</div>
+              <div class="cold-flow">
+                <span>Skills in vocab</span>
+                <span class="cold-arrow">→</span>
+                <span>Cosine scores &gt; 0</span>
+                <span class="cold-arrow">→</span>
+                <span class="cold-result cold-result--good">Ranked Results</span>
+              </div>
+            </div>
+            <div class="cold-divider">— or —</div>
+            <div class="cold-path cold-path--fallback">
+              <div class="cold-icon">❄️</div>
+              <div class="cold-flow">
+                <span>All OOV skills</span>
+                <span class="cold-arrow">→</span>
+                <span>Zero vector</span>
+                <span class="cold-arrow">→</span>
+                <span class="cold-result cold-result--fallback">⚠ Trending Fallback</span>
+              </div>
+            </div>
+          </div>
+          <p class="algo-desc" style="margin-top:1rem;">
+            Never silently shows "Score: 0.00" as a recommendation — the system
+            detects and labels the fallback explicitly.
+          </p>
+        </div>
+      </div>
+
+      <!-- Worked Example -->
+      <div class="worked-example">
+        <div class="worked-header">
+          <span class="worked-chip">Canonical Fixture · ALGORITHM_SPEC.md §3</span>
+          <h3 class="worked-title">Hand-Computed Verification Example</h3>
+        </div>
+        <div class="worked-grid">
+          <div class="worked-col">
+            <h4 class="worked-col-title">Mini Corpus (3 items)</h4>
+            <table class="worked-table">
+              <thead><tr><th>Role</th><th>Skills</th></tr></thead>
+              <tbody>
+                <tr><td>Data Scientist</td><td><code>python · sql · machine_learning</code></td></tr>
+                <tr><td>DevOps Engineer</td><td><code>aws · docker · kubernetes</code></td></tr>
+                <tr><td>Backend Developer</td><td><code>java · python · sql</code></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="worked-col">
+            <h4 class="worked-col-title">Expected Scores (user: python, machine_learning, statistics)</h4>
+            <table class="worked-table">
+              <thead><tr><th>Rank</th><th>Role</th><th>Cosine Score</th></tr></thead>
+              <tbody>
+                <tr class="rank-1"><td>🥇</td><td>Data Scientist</td><td><strong>0.9448</strong></td></tr>
+                <tr class="rank-2"><td>🥈</td><td>Backend Developer</td><td>0.1135</td></tr>
+                <tr class="rank-3"><td>🥉</td><td>DevOps Engineer</td><td>0.0000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ DATASET SECTION ═══════════════ -->
+  <section class="section dataset-section" id="dataset">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-chip">Data</span>
+        <h2 class="section-title">Item Dataset</h2>
+        <p class="section-sub">10 job roles with controlled-vocabulary skill tags powering the TF-IDF corpus.</p>
+      </div>
+      <div class="dataset-grid" id="dataset-grid"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TESTING SECTION ═══════════════ -->
+  <section class="section testing-section" id="testing">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-chip">Quality</span>
+        <h2 class="section-title">Test Suite &amp; Commands</h2>
+        <p class="section-sub">60+ tests across 6 modules. 100% pass rate required for DecodeLabs badge unlock.</p>
+      </div>
+
+      <div class="testing-grid">
+        <!-- Command blocks -->
+        <div class="testing-col">
+          <h3 class="testing-col-title">Run Commands</h3>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">1 — Install dependencies</span>
+              <button class="copy-btn" data-copy="pip install numpy pytest pytest-cov" title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> pip install numpy pytest pytest-cov</pre>
+          </div>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">2 — Run full test suite</span>
+              <button class="copy-btn" data-copy="pytest tests/ -v" title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> pytest tests/ -v</pre>
+          </div>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">3 — With coverage report</span>
+              <button class="copy-btn" data-copy="pytest tests/ -v --cov=src --cov-report=term-missing" title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> pytest tests/ -v --cov=src --cov-report=term-missing</pre>
+          </div>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">4 — Single module test</span>
+              <button class="copy-btn" data-copy="pytest tests/test_vectorizer.py -v" title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> pytest tests/test_vectorizer.py -v</pre>
+          </div>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">5 — Interactive CLI demo</span>
+              <button class="copy-btn" data-copy="python main.py" title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> python main.py</pre>
+          </div>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">6 — CLI with flags + verbose</span>
+              <button class="copy-btn" data-copy='python main.py --skills "Python" "Machine Learning" "SQL" --top-n 5 --verbose' title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> python main.py --skills "Python" "Machine Learning" "SQL" \
+    --top-n 5 --verbose</pre>
+          </div>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">7 — Cold Start test (all OOV)</span>
+              <button class="copy-btn" data-copy='python main.py --skills "Photography" "Painting" "Sculpture"' title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> python main.py --skills "Photography" "Painting" "Sculpture"</pre>
+          </div>
+
+          <div class="cmd-block">
+            <div class="cmd-header">
+              <span class="cmd-label">8 — Run single test class by keyword</span>
+              <button class="copy-btn" data-copy="pytest tests/ -v -k cold_start" title="Copy">⧉</button>
+            </div>
+            <pre class="cmd-code"><span class="cmd-prompt">$</span> pytest tests/ -v -k cold_start</pre>
+          </div>
+        </div>
+
+        <!-- Test matrix -->
+        <div class="testing-col">
+          <h3 class="testing-col-title">Test Coverage Matrix</h3>
+          <div class="test-matrix" id="test-matrix"></div>
+
+          <div class="test-summary">
+            <div class="test-stat">
+              <span class="test-stat-val">60+</span>
+              <span class="test-stat-lbl">Total tests</span>
+            </div>
+            <div class="test-stat">
+              <span class="test-stat-val">6</span>
+              <span class="test-stat-lbl">Test files</span>
+            </div>
+            <div class="test-stat">
+              <span class="test-stat-val">5</span>
+              <span class="test-stat-lbl">Modules covered</span>
+            </div>
+            <div class="test-stat">
+              <span class="test-stat-val">1e-4</span>
+              <span class="test-stat-lbl">Float tolerance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="nav-logo">◈</span>
+        <span>Tech Stack Recommender</span>
+      </div>
+      <p class="footer-desc">
+        DecodeLabs Industrial Training Kit · Batch 2026 · Project 3<br />
+        Content-based filtering · TF-IDF · Cosine Similarity · Built from scratch
+      </p>
+      <div class="footer-links">
+        <span class="footer-tag">Python 3.12</span>
+        <span class="footer-tag">NumPy</span>
+        <span class="footer-tag">pytest</span>
+        <span class="footer-tag">0 ML libraries</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="toast hidden" id="toast">Copied!</div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

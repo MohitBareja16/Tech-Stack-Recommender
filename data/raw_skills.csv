@@ -1,0 +1,11 @@
+role_name,skills,popularity_rank
+Data Scientist,python|sql|machine_learning|statistics|pandas|numpy|data_visualization,1
+Backend Developer,java|python|sql|rest_api|databases|git|spring_boot,2
+DevOps Engineer,aws|docker|kubernetes|linux|ci_cd|terraform|git,3
+Frontend Developer,javascript|html|css|react|typescript|ui_ux|git,4
+Full Stack Developer,javascript|python|react|node.js|sql|rest_api|git,5
+ML Engineer,python|machine_learning|deep_learning|tensorflow|pytorch|numpy|mlops,6
+Cloud Architect,aws|azure|gcp|kubernetes|terraform|networking|security,7
+Cybersecurity Analyst,networking|security|linux|firewalls|penetration_testing|cryptography,8
+Data Analyst,sql|python|data_visualization|excel|tableau|statistics|pandas,9
+Mobile Developer,kotlin|swift|java|react_native|ui_ux|git|rest_api,10
