@@ -22,18 +22,19 @@ TF-IDF vectorization + Cosine Similarity — zero ML libraries, full explainabil
 
 1. [Background](#-background)
 2. [Quick Start](#-quick-start)
-3. [Features](#-features)
-4. [How It Works](#-how-it-works)
-5. [Project Structure](#-project-structure)
-6. [Architecture](#-architecture)
-7. [Algorithm Deep-Dive](#-algorithm-deep-dive)
-8. [Dataset](#-dataset)
-9. [CLI Reference](#-cli-reference)
-10. [Testing](#-testing)
-11. [Design Decisions](#-design-decisions)
-12. [Edge Cases Handled](#-edge-cases-handled)
-13. [Tech Stack](#-tech-stack)
-14. [Documentation](#-documentation)
+3. [Interactive Dashboard Demo](#-interactive-dashboard-demo)
+4. [Features](#-features)
+5. [How It Works](#-how-it-works)
+6. [Project Structure](#-project-structure)
+7. [Architecture](#-architecture)
+8. [Algorithm Deep-Dive](#-algorithm-deep-dive)
+9. [Dataset](#-dataset)
+10. [CLI Reference](#-cli-reference)
+11. [Testing](#-testing)
+12. [Design Decisions](#-design-decisions)
+13. [Edge Cases Handled](#-edge-cases-handled)
+14. [Tech Stack](#-tech-stack)
+15. [Documentation](#-documentation)
 
 ---
 
@@ -113,6 +114,30 @@ xdg-open dashboard/index.html
 ────────────────────────────────────────────────────────────
   ℹ  Out-of-vocabulary terms (zero weight): (none)
 ```
+
+## 🖥️ Interactive Dashboard Demo
+
+The project includes a sleek, modern, single-page dashboard application built with vanilla HTML/CSS/JS. It runs fully client-side using a browser-compatible TF-IDF and Cosine Similarity engine (in `dashboard/data.js`).
+
+### 1. Recommender Dashboard
+The default page offers quick skill presets, manual skill tag input with an autocomplete suggester, Top-N controls, a Verbose Mode toggle, and a responsive recommendations display.
+
+![Dashboard Recommender Screen](docs/assets/dashboard_main.png)
+
+### 2. Autocomplete Suggestion Dropdown
+As you type in the skill input field, the dropdown suggests matching terms from the vocabulary to assist the user and prevent misspelling.
+
+![Dashboard Autocomplete suggestions](docs/assets/dashboard_autocomplete.png)
+
+### 3. Algorithm Math & Worked Example
+The math tab exposes the core mathematical models (TF, IDF, Cosine, Cold Start) alongside an active canvas vector visualizer (θ angle representation) and the verified hand-computed worked fixture.
+
+![Dashboard Algorithm View](docs/assets/dashboard_algorithm.png)
+
+### 4. Searchable Job Role Dataset
+The dataset view provides an interactive grid of all job roles in the corpus and their associated skills, allowing for real-time skill and role searching.
+
+![Dashboard Job Corpus Search](docs/assets/dashboard_dataset.png)
 
 ---
 

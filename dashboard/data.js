@@ -78,7 +78,7 @@ function cosineSim(a, b) {
 
 // ── Score all items ──
 function scoreAllItems(userVec, itemMatrix, vocab) {
-  const userNonzero = userVec.map((v, i) => ({ i, v })).filter(x => x.v > 0);
+  const userNonzero = Array.from(userVec).map((v, i) => ({ i, v })).filter(x => x.v > 0);
   return DATASET.map((item, idx) => {
     const row = itemMatrix[idx];
     const score = cosineSim(userVec, row);
@@ -110,20 +110,23 @@ function coldStartFallback(topN) {
     .map(item => ({ role: item.role, score: null, matched: [], rank: item.rank, isFallback: true }));
 }
 
+// ── Pre-compute vocabulary, IDF, and item matrix globally at load time for scalability ──
+const VOCAB  = buildVocabulary(DATASET);
+const IDF    = computeIDF(DATASET, VOCAB);
+const MATRIX = buildItemMatrix(DATASET, VOCAB, IDF);
+
 // ── Main recommend function ──
 function recommend(rawSkills, topN = 3) {
   const normalized = rawSkills.map(normalizeText).filter(Boolean);
   if (normalized.length < 3) throw new Error(`Need ≥3 skills. Got ${normalized.length}.`);
 
-  const vocab = buildVocabulary(DATASET);
-  const idf   = computeIDF(DATASET, vocab);
-  const matrix = buildItemMatrix(DATASET, vocab, idf);
-  const { vec: userVec, oov } = buildUserVector(normalized, vocab, idf);
+  const { vec: userVec, oov } = buildUserVector(normalized, VOCAB, IDF);
 
-  const scored = scoreAllItems(userVec, matrix, vocab);
+  const scored = scoreAllItems(userVec, MATRIX, VOCAB);
   const results = isColdStart(scored)
     ? coldStartFallback(topN)
     : rankResults(scored, topN);
 
-  return { results, userVec, vocab, idf, oov };
+  return { results, userVec, vocab: VOCAB, idf: IDF, oov };
 }
+
